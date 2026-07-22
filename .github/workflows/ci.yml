@@ -30,8 +30,8 @@ jobs:
 
       - name: Run pytest
         env:
-          APP_SECRET_KEY: ci-test-secret-key-not-for-production-0123456789
-          DATABASE_URL: sqlite+pysqlite:///:memory:
+          APP_SECRET_KEY: "ci-test-secret-key-not-for-production-0123456789"
+          DATABASE_URL: "sqlite+pysqlite:///:memory:"
         run: pytest -q
 
   frontend:
