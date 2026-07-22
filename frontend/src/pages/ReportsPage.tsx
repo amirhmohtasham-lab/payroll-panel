@@ -18,7 +18,7 @@ const REPORTS = [
 
 type ReportKey = (typeof REPORTS)[number]['key'];
 
-const BAR_COLORS = ['#b88916', '#6f8b57', '#586b3f', '#d3aa45', '#6f4e37', '#879b68', '#9a7b2f', '#a66b4f', '#7e8f52', '#c59b3c'];
+const BAR_COLORS = ['#d0a830', '#055d43', '#3f8a6d', '#e0bd55', '#004733', '#a88418', '#7aa68f', '#c49a28', '#2f6f56', '#f0d27a'];
 
 export function ReportsPage() {
   const [active, setActive] = useState<ReportKey | null>(null);
@@ -105,7 +105,7 @@ function ReportBody({
           <Bar
             data={{
               labels: ft.labels,
-              datasets: [{ label: 'ریال', data: ft.values, backgroundColor: '#b88916', borderRadius: 6 }],
+              datasets: [{ label: 'ریال', data: ft.values, backgroundColor: '#d0a830', borderRadius: 6 }],
             }}
             options={{ responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }}
           />
@@ -144,8 +144,8 @@ function ReportBody({
             data={{
               labels: mo.labels,
               datasets: [
-                { label: 'دریافتی', data: mo.worker, backgroundColor: '#b88916', borderRadius: 6 },
-                { label: 'هزینه', data: mo.desc, backgroundColor: '#10b981', borderRadius: 6 },
+                { label: 'دریافتی', data: mo.worker, backgroundColor: '#d0a830', borderRadius: 6 },
+                { label: 'هزینه', data: mo.desc, backgroundColor: '#055d43', borderRadius: 6 },
               ],
             }}
             options={{ responsive: true, scales: { y: { beginAtZero: true } } }}
@@ -171,7 +171,7 @@ function ReportBody({
           <Doughnut
             data={{
               labels: ['بدون نقص', 'هشدار', 'خطا'],
-              datasets: [{ data: [st.clean, st.warn, st.error], backgroundColor: ['#27a644', '#fbbf24', '#f87171'], borderWidth: 0 }],
+              datasets: [{ data: [st.clean, st.warn, st.error], backgroundColor: ['#055d43', '#d0a830', '#b54637'], borderWidth: 0 }],
             }}
             options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
           />

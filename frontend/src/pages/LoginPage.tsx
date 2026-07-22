@@ -28,14 +28,15 @@ export function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-story" aria-hidden="true">
+        <img className="login-story-mark" src="/logo-mark.png" alt="" />
         <span className="eyebrow">دفتر مزرعه</span>
         <strong>عددها را<br />به زمین برگردان.</strong>
         <span className="login-story-line" />
         <span>حقوق، محصول و هزینه<br />در یک قاب آرام.</span>
       </div>
       <form className="login-card" onSubmit={handleSubmit}>
+        <img className="login-logo" src="/logo.png" alt="گندم دشت" />
         <span className="eyebrow">ورود امن</span>
-        <h1>گندم دشت</h1>
         <p className="login-subtitle">به دفتر مالی مزرعه خوش آمدید</p>
         <label>نام کاربری</label>
         <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus />

@@ -28,10 +28,9 @@ export function Layout({
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="brand">
-          <img src="/favicon.svg" alt="" aria-hidden="true" />
-          <span>گندم دشت</span>
-        </div>
+        <a className="brand" href="/" aria-label="گندم دشت">
+          <img src="/logo.png" alt="گندم دشت" />
+        </a>
         <div className="sidebar-note">
           <span className="sidebar-note-mark" aria-hidden="true" />
           <span>سامانه مالی مزرعه</span>
