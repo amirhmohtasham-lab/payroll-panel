@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+
+# Data files (sensitive)
+data/
+users.json
+
+# Uploads
+uploads/
+
+# Environment
+.env
+install.sh
+payroll-panel.service
+
+# IDE
+.vscode/
+.idea/

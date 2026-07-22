@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>گندم دشت — پنل اپراتور</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f4f6;--card:#ffffff;--surface:#f9fafb;--accent:#5e6ad2;--accent-light:#7170ff;--text:#111827;--text-sec:#4b5563;--text-muted:#9ca3af;--border:#e5e7eb;--border-subtle:#f0f0f0;--green:#16a34a;--err:#dc2626;--radius:8px;--radius-sm:6px;--font:'Vazirmatn','Inter',system-ui,Tahoma,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6}
+header{padding:1rem 1.5rem;border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;background:var(--card)}
+header h1{font-size:.95rem;font-weight:500}
+header .left{display:flex;align-items:center;gap:.75rem}
+header .left span{color:var(--text-muted);font-size:.82rem}
+.logout{background:none;border:1px solid var(--border);color:var(--text-muted);padding:.3rem .8rem;border-radius:var(--radius-sm);cursor:pointer;font-size:.8rem;font-family:inherit}
+.logout:hover{border-color:var(--text-quat);color:var(--text-sec)}
+main{max-width:900px;margin:0 auto;padding:1.25rem}
+.card{background:var(--card);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;border:1px solid var(--border)}
+h2{font-size:1rem;font-weight:500;margin-bottom:.5rem}
+label{display:block;color:var(--text-muted);font-size:.8rem;margin:.5rem 0 .2rem}
+input,select{max-width:400px;padding:.5rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--text);font-size:.85rem;font-family:inherit;width:100%}
+select{width:auto}input[type=file]{max-width:100%}
+button.primary{background:var(--accent);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:var(--radius-sm);cursor:pointer;font-size:.85rem;font-family:inherit;font-weight:500}
+button.primary:disabled{opacity:.5}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th,td{text-align:right;padding:.4rem .5rem;border-bottom:1px solid var(--border-subtle)}
+th{color:var(--text-muted);font-weight:500}
+.badge{display:inline-block;padding:.1rem .45rem;border-radius:999px;font-size:.72rem}
+.badge.err{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.badge.ok{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.badge.warn{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.msg{padding:.55rem;border-radius:var(--radius-sm);margin:.55rem 0;font-size:.85rem}
+.msg.err{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.msg.ok{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+a.dl{color:var(--accent-light);font-size:.85rem}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal.open{display:flex}
+.modal .box{background:var(--surface);border-radius:12px;padding:1.5rem;max-width:420px;width:100%;border:1px solid var(--border)}
+/* Upload hub type selector pills */
+.type-selector{display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.type-pill{padding:.65rem 1.25rem;border-radius:var(--radius);border:2px solid var(--border);cursor:pointer;font-size:.9rem;font-family:inherit;background:var(--card);color:var(--text-sec);transition:all .15s ease;flex:1;text-align:center;min-width:160px}
+.type-pill:hover{border-color:var(--accent-light);background:#f5f6ff}
+.type-pill.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.type-pill .icon{font-size:1.2rem;display:block;margin-bottom:.15rem}
+/* Hidden sections */
+.upload-section{display:none}
+.upload-section.visible{display:block}
+@media(max-width:600px){main{padding:.75rem}.card{padding:.85rem}}
+</style>
+</head>
+<body>
+<header>
+<div style="display:flex;align-items:center;gap:.5rem">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABwYAAAGWCAYAAABy5uc8AAAACXBIWXMAABcRAAAXEQHKJvM/AAAgAElEQVR4nOzdP4gj6R/n988uS4Hxn+5fYIODo7Xg1BqtwcjZaE0Fl41WkbmgRgM+nHm0BoMNhtEkjo5bzUXORl3ZYaztSRwVjBonlsFstzB2uGoOR8b8WvbBmUrGwfNoW9OjP6VSVT1PSe8XNLvT06r6Tre6u1Sf5/t9vvvy5YsAAAAAAAAAAABwuoIobEj6U9KtpFEaJzduK4IL37suAAAAAAAAAAAAAKUb2f++lPR7EIWLIAr7DuuBA9/RMQgAAAAAAAAAAHC6gijsSPq85a+XMqHhKI2Tx8qKghMEgwAAAAAAAAAAACcsiMKFpKs9H0ZAeAYIBgEAAAAAAAAAAE5UEIUDSb8d8BACwhNGMAgAAAAAAAAAAHCCgii8lLSQdJHj4QSEJ+h71wUAAAAAAAAAAACgFEPlCwVlH/dO0iKIwqENGVFzdAwCAAAAAAAAAACcmCAKG5L+LPCQdBCeADoGAQAAAAAAAAAATs+44OOtOgjvgijsF3xsVISOQQAAAAAAAAAAgBMSRGFX0u8ln+ZBUj+Nk2nJ50GBCAYBAAAAAAAAAABOSBCFC0lXFZ3uViYgXFR0PhyBYBAAAAAAAAAAAOBEBFE4lBn5WbUPkobsP+g3gkEAAAAAAAAAAIATEEThpaSFzH6ALiwlDdI4GTs6P/b43nUBAAAAAAAAAAAAKMRI7kJB2XN/DKJwGkRhy2Ed2IKOQQAAAAAAAAAAgJoLorAj6bPrOp55L2nEeFF/0DEIAAAAAAAAAABQf0PXBWzwTtKdDS3hAToGAQAAAAAAAAAAaiyIwr6kj67r2OOTpD7dg24RDAIAAAAAAAAAANRUEIWXku4kXbmuJYOlTDh447qQc8UoUQAAAAAAAAAAgPoaqB6hoCRdSPo9iMIbG2iiYnQMAgAAAAAAAAAA1FAQhQ2ZbsELx6XkQfegAwSDAAAAAAAAAACgdPNJuyVp9TZq9maLks93ac/1lWZvNi3zvFUKovBG0ivXdRzpWtKAvQerQTAIAAAAAAAAAAAKZ4PArqSOpJdrf3Xb7M06BZ6jJek/sm+S1ND2DroPzd5sUMS5XQuisCPps+s6CvIgqZvGyZ3rQk7dD64LAAAAAAAAAAAAp8EGdX2ZQHDbvnf9I4+/ChtbOmyE5r2kYd5ze2jkuoACXUn6I4jC92mcDF0Xc8roGAQAAAAAAAAAALnNJ+2GpIF2h4Er183erH/g8Tt6Chvz7qW3lNRp9mYn0ZEWRGFf0kfXdZTkxzROFq6LOFV0DAIAAAAAAAAAgIPZwG6gw/a4G2Y89qVMGDjQ/rAxi8EJhYKXOq1uwXXXhILlIhgEAAAAAAAAAOCE2Y6+brM3KyRMsoHgUF/vG5jFdbM3W+w59qVMGDhQ/u7ATecdF3QsHxT5ufHJUubfhhIRDAIAAAAAAAAAcILmk3ZXJmh5KelBR3aZ2f39Rjo8EFwZ7jl+3x6/yNDrXicUNgVR2JD0znUdJRmlcfLouohTRzAIAAAAAAAAAMAJsR19Y309gnN6xPEuZUK9t0eUtbVb0B7/RvkDx22WMp2SpxQ2jV0XUJKHNE6Gros4BwSDAAAAAAAAAACcgD0jPqc5j9mSCe2O3edvWPLxN+nvG12ahf28NuxbS9Kl/attQeZS0mo/w8Wzt7u8QWUQhZ0d56y7k+nq9B3BIAAAAAAAAAAANTaftK8k/feS/sMdH3aT47h9SR9zlrVuY7egDQWnKme/vPfN3uzgf7P0tCejfcsTxF2sPW7T47/LU5dOt1vwNo2TXF8rHO571wUAAAAAAAAAAIB85pP2QNL/pt2h4P2hXWrzSXusYkJBaUO3oB0fOlY5oeB1szf75pz7zCft7nzSnkr6U9JvKqk7z37NDhJE4UDldFX6oO+6gHNC..."/>
+<span style="font-weight:500;font-size:.9rem;color:var(--text-sec)">اپراتور</span>
+</div>
+<div class="left"><span id="userInfo"></span><button class="logout" onclick="logout()">خروج</button></div>
+</header>
+<main>
+<div class="card">
+<h2>📤 Upload Hub — مرکز بارگذاری</h2>
+<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:.75rem">نوع فایل مورد نظر را انتخاب کنید.</p>
+
+<div class="type-selector">
+<button class="type-pill active" data-type="workforce" onclick="selectType('workforce')">
+<span class="icon">👷</span> صورت کارگری
+</button>
+<button class="type-pill" data-type="fertilizer" onclick="selectType('fertilizer')">
+<span class="icon">🧪</span> مصرف کود
+</button>
+</div>
+
+<!-- Workforce upload section -->
+<div id="section-workforce" class="upload-section visible">
+<label>ماه (شمسی)</label><select id="monthKey"></select>
+<label style="margin-top:.5rem">فایل اکسل</label><input type="file" id="file" accept=".xlsx"/>
+<p style="margin-top:.75rem"><button class="primary" id="btnUpload" onclick="doUpload(false)">🔍 بررسی و بارگذاری</button></p>
+<div id="uploadMsg"></div>
+<div id="result" style="display:none"><div class="card" id="detailCard"></div></div>
+</div>
+
+<!-- Fertilizer upload section -->
+<div id="section-fertilizer" class="upload-section">
+<label>ماه (شمسی)</label><select id="fertMonthKey"></select>
+<label style="margin-top:.5rem">محصول</label>
+<select id="fertCrop">
+<option value="گوجه فرنگی">گوجه فرنگی</option>
+<option value="گندم">گندم</option>
+<option value="جو">جو</option>
+<option value="زیره">زیره</option>
+<option value="نخود">نخود</option>
+<option value="سیب زمینی">سیب زمینی</option>
+<option value="زعفران">زعفران</option>
+<option value="فلفل دلمه‌ای">فلفل دلمه‌ای</option>
+<option value="پیاز">پیاز</option>
+<option value="سیر">سیر</option>
+</select>
+<label style="margin-top:.5rem">فصل</label>
+<input type="text" id="fertSeason" placeholder="مثال: بهار ۱۴۰۵"/>
+<label style="margin-top:.5rem">فایل اکسل</label><input type="file" id="fertFile" accept=".xlsx"/>
+<p style="margin-top:.75rem"><button class="primary" id="btnFertUpload" onclick="doFertilizerUpload(false)">🔍 بررسی و بارگذاری</button></p>
+<div id="fertUploadMsg"></div>
+<div id="fertResult" style="display:none"><div class="card" id="fertDetailCard"></div></div>
+</div>
+</div>
+</main>
+<div class="modal" id="dupModal">
+<div class="box">
+<h3 style="margin-bottom:.5rem">⚠️ فایل تکراری</h3>
+<p id="dupText" style="color:var(--text-sec);font-size:.9rem"></p>
+<p style="display:flex;gap:.5rem;margin-top:1rem">
+<button class="primary" onclick="confirmReplace()">جایگزین شود</button>
+<button class="logout" onclick="closeDup()" style="padding:.5rem 1rem">انصراف</button>
+</p></div></div>
+<script>
+var MONTHS=[['01','فروردین'],['02','اردیبهشت'],['03','خرداد'],['04','تیر'],['05','مرداد'],['06','شهریور'],['07','مهر'],['08','آبان'],['09','آذر'],['10','دی'],['11','بهمن'],['12','اسفند']];
+var CROPS=['گوجه فرنگی','گندم','جو','زیره','نخود','سیب زمینی','زعفران','فلفل دلمه‌ای','پیاز','سیر'];
+var activeType='workforce';
+var pendingReplace=null;
+function $(id){return document.getElementById(id)}
+var sel=$('monthKey');sel.innerHTML='';
+var fertSel=$('fertMonthKey');fertSel.innerHTML='';
+for(var yr=1405;yr<=1407;yr++)MONTHS.forEach(function(m){var o=document.createElement('option');o.value=yr+'-'+m[0];o.textContent=m[1]+' '+yr;sel.appendChild(o);var p=document.createElement('option');p.value=yr+'-'+m[0];p.textContent=m[1]+' '+yr;fertSel.appendChild(p)});
+async function api(path,opts){opts=opts||{};var r=await fetch(path,opts);var d=await r.json().catch(function(){return{}});if(!r.ok)throw{status:r.status,data:d};return d}
+(async function(){try{var m=await fetch('/api/me');if(!m.ok)throw{};var d=await m.json();$('userInfo').textContent=d.name;if(d.role!=='operator')window.location.href='/index'}catch(e){window.location.href='/login'}})();
+function closeDup(){$('dupModal').classList.remove('open');pendingReplace=null}
+function selectType(type){
+  activeType=type;
+  document.querySelectorAll('.type-pill').forEach(function(p){p.classList.toggle('active',p.dataset.type===type)});
+  document.querySelectorAll('.upload-section').forEach(function(s){s.classList.toggle('visible',s.id==='section-'+type)});
+  // clear old messages when switching
+  if(type==='workforce'){$('fertUploadMsg').innerHTML='';$('fertResult').style.display='none'}
+  else{$('uploadMsg').innerHTML='';$('result').style.display='none'}
+}
+async function doUpload(replace){
+  var f=$('file').files[0];if(!f){$('uploadMsg').innerHTML='<div class="msg err">فایل را انتخاب کنید.</div>';return}
+  $('btnUpload').disabled=true;
+  var fd=new FormData();fd.append('file',f);fd.append('month_key',$('monthKey').value);fd.append('month_label',$('monthKey').selectedOptions[0].textContent);fd.append('replace',replace?'true':'false');
+  try{var r=await fetch('/api/upload',{method:'POST',body:fd});var d=await r.json();
+    if(r.status===409&&d.duplicate){$('dupText').textContent='برای «'+d.existing.month_label+'» قبلاً فایل ثبت شده. جایگزین شود؟';pendingReplace='workforce';$('dupModal').classList.add('open');return}
+    if(!r.ok)throw{d:d};closeDup();$('uploadMsg').innerHTML='<div class="msg '+(d.error_count===0?'ok':'err')+'\">✅ ثبت شد. خطا: '+d.error_count+' | هشدار: '+d.warn_count+'</div>';renderDetail(d.record)
+  }catch(e){$('uploadMsg').innerHTML='<div class="msg err">'+(e.d?.detail||'خطا')+'</div>'}
+  finally{$('btnUpload').disabled=false}
+}
+function fn(v){if(v===null)return'-';var n=parseFloat(v);return isNaN(n)?'':n.toLocaleString('fa-IR')}
+function renderDetail(rec){
+  $('result').style.display='block';
+  var h='<h3>👷 '+rec.month_label+'</h3><p style="color:var(--text-muted);font-size:.85rem">'+rec.filename+' — خطا: '+rec.error_count+' / هشدار: '+rec.warn_count+'</p>';
+  h+=rec.highlight_url?'<p><a class="dl" href="'+rec.highlight_url+'">📥 دانلود اکسل هایلایت‌شده</a></p>':'';
+  var sheets=rec.audit_summary?.sheets||[];
+  if(sheets.length){h+='<table><tr><th>شیت</th><th>جمع کارگری</th><th>جمع توضیحات</th><th>وضعیت</th></tr>';
+    sheets.forEach(function(s){var bd='<span class="badge ok">تأیید</span>';if(s.error_count>0)bd='<span class="badge err">'+s.error_count+' خطا</span>';else if(s.warn_count>0)bd='<span class="badge warn">'+s.warn_count+' هشدار</span>';h+='<tr><td>'+s.name+'</td><td>'+fn(s.worker_gross)+'</td><td>'+fn(s.desc_gross)+'</td><td>'+bd+'</td></tr>'});h+='</table>'}
+  var issues=rec.issues||[];
+  if(issues.length){h+='<h4 style="margin-top:.75rem;font-weight:500">خطاها</h4>';
+    issues.forEach(function(i){h+='<div style="padding:.25rem 0;font-size:.82rem;border-bottom:1px solid var(--border-subtle)"><span class="badge '+(i.severity==='error'?'err':'warn')+'">'+i.severity+'</span> <b>'+i.code+'</b> — '+i.sheet+': '+i.message+'</div>'})}
+  else{h+='<p style="color:var(--green);margin-top:.5rem">✅ بدون نقص</p>'}
+  $('detailCard').innerHTML=h
+}
+async function doFertilizerUpload(replace){
+  var f=$('fertFile').files[0];if(!f){$('fertUploadMsg').innerHTML='<div class="msg err">فایل را انتخاب کنید.</div>';return}
+  var season=$('fertSeason').value.trim();if(!season){$('fertUploadMsg').innerHTML='<div class="msg err">فصل را وارد کنید.</div>';return}
+  $('btnFertUpload').disabled=true;
+  var fd=new FormData();fd.append('file',f);fd.append('month_key',$('fertMonthKey').value);fd.append('month_label',$('fertMonthKey').selectedOptions[0].textContent);fd.append('crop',$('fertCrop').value);fd.append('season',season);fd.append('replace',replace?'true':'false');
+  try{var r=await fetch('/api/fertilizer/upload',{method:'POST',body:fd});var d=await r.json();
+    if(r.status===409&&d.duplicate){$('dupText').textContent='برای «'+d.existing.month_label+'» قبلاً فایل مصرف کود ثبت شده. جایگزین شود؟';pendingReplace='fertilizer';$('dupModal').classList.add('open');return}
+    if(!r.ok)throw{d:d};closeDup();$('fertUploadMsg').innerHTML='<div class="msg '+(d.error_count===0?'ok':'err')+'\">✅ ثبت شد. خطا: '+d.error_count+' | هشدار: '+d.warn_count+'</div>';renderFertilizerDetail(d.record)
+  }catch(e){$('fertUploadMsg').innerHTML='<div class="msg err">'+(e.d?.detail||'خطا')+'</div>'}
+  finally{$('btnFertUpload').disabled=false}
+}
+function renderFertilizerDetail(rec){
+  $('fertResult').style.display='block';
+  var infoText=rec.crop+(!rec.season?'':(' — '+rec.season));
+  var h='<h3>🧪 '+rec.month_label+'</h3><p style="color:var(--text-muted);font-size:.85rem">'+rec.filename+' | '+infoText+' | خطا: '+rec.error_count+' / هشدار: '+rec.warn_count+'</p>';
+  h+=rec.highlight_url?'<p><a class="dl" href="'+rec.highlight_url+'">📥 دانلود اکسل هایلایت‌شده</a></p>':'';
+  var issues=rec.issues||[];
+  if(issues.length){h+='<h4 style="margin-top:.75rem;font-weight:500">جزئیات</h4>';
+    issues.forEach(function(i){h+='<div style="padding:.25rem 0;font-size:.82rem;border-bottom:1px solid var(--border-subtle)"><span class="badge '+(i.severity==='error'?'err':'warn')+'">'+i.severity+'</span> <b>'+i.code+'</b> — '+(i.sheet||'')+': '+i.message+'</div>'})}
+  else{h+='<p style="color:var(--green);margin-top:.5rem">✅ بدون نقص</p>'}
+  $('fertDetailCard').innerHTML=h
+}
+function confirmReplace(){
+  closeDup();
+  if(pendingReplace==='workforce')doUpload(true);
+  else if(pendingReplace==='fertilizer')doFertilizerUpload(true);
+}
+function logout(){fetch('/api/logout',{method:'POST'});window.location.href='/login'}
+</script>
+</body>
+</html>
