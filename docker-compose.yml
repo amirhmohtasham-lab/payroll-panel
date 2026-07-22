@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: payroll
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-payroll}
+      POSTGRES_DB: payroll_panel
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payroll -d payroll_panel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://payroll:${POSTGRES_PASSWORD:-payroll}@db:5432/payroll_panel
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/data/uploads
+      - app_data:/data/app-data
+      - ${GOOGLE_CREDENTIALS_PATH:-./secrets}:/secrets:ro
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m app.seed &&
+             gunicorn app.main:app -k uvicorn.workers.UvicornWorker -w 2 -b 0.0.0.0:8765 --timeout 120"
+    expose:
+      - "8765"
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/certs:/etc/nginx/certs:ro
+      - frontend_dist:/usr/share/nginx/html:ro
+
+  frontend-build:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - frontend_dist:/app/dist
+    command: sh -c "npm ci && npm run build"
+    profiles: ["build"]
+
+volumes:
+  db_data:
+  uploads_data:
+  app_data:
+  frontend_dist:

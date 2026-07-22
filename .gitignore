@@ -17,6 +17,11 @@ uploads/
 install.sh
 payroll-panel.service
 
+# TLS certs / service account secrets (never commit real credentials)
+deploy/certs/*
+!deploy/certs/.gitkeep
+secrets/
+
 # IDE
 .vscode/
 .idea/
