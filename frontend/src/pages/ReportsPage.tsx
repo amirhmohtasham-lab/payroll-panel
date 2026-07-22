@@ -18,7 +18,7 @@ const REPORTS = [
 
 type ReportKey = (typeof REPORTS)[number]['key'];
 
-const BAR_COLORS = ['#5e6ad2', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#6366f1'];
+const BAR_COLORS = ['#b88916', '#6f8b57', '#586b3f', '#d3aa45', '#6f4e37', '#879b68', '#9a7b2f', '#a66b4f', '#7e8f52', '#c59b3c'];
 
 export function ReportsPage() {
   const [active, setActive] = useState<ReportKey | null>(null);
@@ -45,6 +45,14 @@ export function ReportsPage() {
 
   return (
     <Layout title="گزارش‌های پیش‌فرض" navItems={ACCOUNTANT_NAV}>
+      <section className="page-intro reports-intro">
+        <div>
+          <span className="eyebrow">اتاق تصمیم‌گیری</span>
+          <h2>گزارش را بر اساس پرسش خود انتخاب کنید</h2>
+          <p>از هزینه‌های هر محدوده تا روند ماهانه، تصویر روشن‌تری از عملیات بسازید.</p>
+        </div>
+        <span className="season-mark" aria-hidden="true">گزارش</span>
+      </section>
       <div className="report-grid">
         {REPORTS.map((r) => (
           <div
@@ -97,7 +105,7 @@ function ReportBody({
           <Bar
             data={{
               labels: ft.labels,
-              datasets: [{ label: 'ریال', data: ft.values, backgroundColor: '#5e6ad2', borderRadius: 6 }],
+              datasets: [{ label: 'ریال', data: ft.values, backgroundColor: '#b88916', borderRadius: 6 }],
             }}
             options={{ responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }}
           />
@@ -136,7 +144,7 @@ function ReportBody({
             data={{
               labels: mo.labels,
               datasets: [
-                { label: 'دریافتی', data: mo.worker, backgroundColor: '#5e6ad2', borderRadius: 6 },
+                { label: 'دریافتی', data: mo.worker, backgroundColor: '#b88916', borderRadius: 6 },
                 { label: 'هزینه', data: mo.desc, backgroundColor: '#10b981', borderRadius: 6 },
               ],
             }}

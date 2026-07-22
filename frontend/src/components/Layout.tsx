@@ -28,7 +28,14 @@ export function Layout({
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="brand">🌾 گندم دشت</div>
+        <div className="brand">
+          <img src="/favicon.svg" alt="" aria-hidden="true" />
+          <span>گندم دشت</span>
+        </div>
+        <div className="sidebar-note">
+          <span className="sidebar-note-mark" aria-hidden="true" />
+          <span>سامانه مالی مزرعه</span>
+        </div>
         {navItems.map((item) => (
           <NavLink
             key={item.to}
@@ -42,9 +49,12 @@ export function Layout({
       </aside>
       <div className="content">
         <header className="topbar">
-          <h1>{title}</h1>
+          <div className="topbar-heading">
+            <span className="topbar-kicker">دفتر عملیات • امروز</span>
+            <h1>{title}</h1>
+          </div>
           <div className="left">
-            <span>{user?.name}</span>
+            <span className="user-chip"><span className="user-dot" aria-hidden="true" />{user?.name}</span>
             <button className="secondary" onClick={handleLogout}>
               خروج
             </button>

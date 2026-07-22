@@ -33,6 +33,14 @@ export function DashboardPage() {
 
   return (
     <Layout title="Upload Hub" navItems={ACCOUNTANT_NAV}>
+      <section className="page-intro">
+        <div>
+          <span className="eyebrow">نبض مالی مزرعه</span>
+          <h2>کار امروز را از همین‌جا شروع کنید</h2>
+          <p>فایل‌های حقوق و مصرف کود را با یک بررسی دقیق وارد کنید.</p>
+        </div>
+        <span className="season-mark" aria-hidden="true">۱۴۰۵</span>
+      </section>
       <div className="dash-cards">
         <DashCard value={summary?.month_count ?? 0} label="ماه ثبت‌شده" />
         <DashCard
