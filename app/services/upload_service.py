@@ -3,6 +3,7 @@
 Replaces the JSON-file-based index.json / fertilizer_index.json flow in the legacy app.
 """
 from __future__ import annotations
+from app.services.fertilizer_hook import post_process_fertilizer_upload
 
 import re
 from datetime import datetime, timezone
@@ -159,6 +160,7 @@ async def process_payroll_upload(
         AuditIssue(severity=i.severity, code=i.code, sheet=i.sheet, message=i.message) for i in issues
     ]
 
+
     db.commit()
     db.refresh(upload)
     return upload
@@ -241,6 +243,13 @@ async def process_fertilizer_upload(
     upload.issues = [
         AuditIssue(severity=i.severity, code=i.code, sheet=i.sheet, message=i.message) for i in issues
     ]
+
+    # ── Run unpivot to create Cleaned Data sheet ──
+    unpivot_result = post_process_fertilizer_upload(db, upload)
+    if unpivot_result.get("unpivot_success"):
+        upload.fertilizer_count = unpivot_result["row_count"]
+    elif unpivot_result.get("error") and "Missing sheets" not in unpivot_result.get("error", ""):
+        logger.warning("unpivot warning: %s", unpivot_result["error"])
 
     db.commit()
     db.refresh(upload)

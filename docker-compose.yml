@@ -41,8 +41,7 @@ services:
     depends_on:
       - web
     ports:
-      - "80:80"
-      - "443:443"
+      - "8766:80"
     volumes:
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./deploy/certs:/etc/nginx/certs:ro

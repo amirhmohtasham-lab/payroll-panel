@@ -18,10 +18,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    user_role = postgresql.ENUM("operator", "accountant", name="user_role")
-    upload_type = postgresql.ENUM("payroll", "fertilizer", name="upload_type")
-    user_role.create(op.get_bind(), checkfirst=True)
-    upload_type.create(op.get_bind(), checkfirst=True)
+    op.execute("CREATE TYPE user_role AS ENUM ('OPERATOR', 'ACCOUNTANT')")
+    op.execute("CREATE TYPE upload_type AS ENUM ('PAYROLL', 'FERTILIZER')")
 
     op.create_table(
         "users",
@@ -29,7 +27,7 @@ def upgrade() -> None:
         sa.Column("username", sa.String(64), nullable=False, unique=True),
         sa.Column("name", sa.String(128), nullable=False),
         sa.Column("password_hash", sa.String(255), nullable=False),
-        sa.Column("role", user_role, nullable=False),
+        sa.Column("role", postgresql.ENUM("OPERATOR", "ACCOUNTANT", name="user_role", create_type=False), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
     )
@@ -51,7 +49,7 @@ def upgrade() -> None:
     op.create_table(
         "uploads",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column("upload_type", upload_type, nullable=False),
+        sa.Column("upload_type", postgresql.ENUM("PAYROLL", "FERTILIZER", name="upload_type", create_type=False), nullable=False),
         sa.Column("month_key", sa.String(16), nullable=False),
         sa.Column("month_label", sa.String(64), nullable=False),
         sa.Column("original_filename", sa.String(255), nullable=False),
@@ -100,5 +98,5 @@ def downgrade() -> None:
     op.drop_table("uploads")
     op.drop_table("sessions")
     op.drop_table("users")
-    postgresql.ENUM(name="upload_type").drop(op.get_bind(), checkfirst=True)
-    postgresql.ENUM(name="user_role").drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS upload_type")
+    op.execute("DROP TYPE IF EXISTS user_role")
