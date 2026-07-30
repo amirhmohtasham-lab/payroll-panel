@@ -12,6 +12,8 @@ from app.core.security import require_roles
 from app.db import get_db
 from app.models.upload import Upload, UploadType
 from app.models.user import User, UserRole
+import os
+import os
 from app.services import audit_service, upload_service
 
 router = APIRouter(tags=["reports"])
@@ -266,6 +268,116 @@ def _markdown_table_to_html(md: str) -> str:
         out.append("<tr>" + "".join(f"<{tag}>{c}</{tag}>" for c in cells) + "</tr>")
     out.append("</table>")
     return "\n".join(out)
+
+
+
+@router.get("/api/fertilizer/reports/data")
+def api_fertilizer_reports_data(
+    db: DbSession = Depends(get_db),
+    _: User = Depends(require_roles(UserRole.OPERATOR, UserRole.ACCOUNTANT)),
+):
+    """Return all cleaned fertilizer data for PivotTable."""
+    from app.models.upload import Upload, UploadType
+    from app.services.unpivot_fertilizer import run_unpivot
+    
+    uploads = list(
+        db.execute(
+            select(Upload).where(Upload.upload_type == UploadType.FERTILIZER)
+        ).scalars()
+    )
+    
+    all_rows = []
+    for u in uploads:
+        if not u.stored_path or not os.path.isfile(u.stored_path):
+            continue
+        try:
+            tmp_path = str(u.stored_path)
+            # Ensure the file has a Cleaned Data sheet first
+            from openpyxl import load_workbook
+            wb = load_workbook(tmp_path, read_only=True)
+            sheets = set(wb.sheetnames)
+            wb.close()
+            
+            if "Cleaned Data" not in sheets:
+                # Run unpivot to create it
+                result = run_unpivot(tmp_path)
+                if not result["success"]:
+                    continue
+            
+            # Read the cleaned data
+            wb = load_workbook(tmp_path, data_only=True)
+            ws = wb["Cleaned Data"]
+            headers = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0] is None:
+                    continue
+                entry = {
+                    "month_key": u.month_key,
+                    "month_label": u.month_label,
+                    "crop": u.crop or "",
+                    "season": u.season or "",
+                }
+                for i, h in enumerate(headers):
+                    if i < len(row):
+                        entry[h] = row[i]
+                all_rows.append(entry)
+            wb.close()
+        except Exception:
+            continue
+    
+    # Add combined variety column
+    for row in all_rows:
+        vars = []
+        if row.get("واریته ۱"): vars.append(str(row["واریته ۱"]))
+        if row.get("واریته ۲"): vars.append(str(row["واریته ۲"]))
+        if row.get("واریته ۳"): vars.append(str(row["واریته ۳"]))
+        row["واریته (ترکیبی)"] = " | ".join(vars) if vars else ""
+
+    # Persian month name mapping
+    PERSIAN_MONTHS = {
+        1: "فروردین", 2: "اردیبهشت", 3: "خرداد", 4: "تیر",
+        5: "مرداد", 6: "شهریور", 7: "مهر", 8: "آبان",
+        9: "آذر", 10: "دی", 11: "بهمن", 12: "اسفند",
+    }
+
+    # Add Persian month name column — extracted from actual date in Excel data
+    import re as _re
+    for row in all_rows:
+        # Try تاریخ اجرا first, then تاریخ توصیه
+        date_str = str(row.get("تاریخ اجرا", row.get("تاریخ توصیه", "")))
+        match = _re.match(r"^(\d{4})/(\d{1,2})", date_str)
+        if match:
+            y, m = match.group(1), int(match.group(2))
+            mname = PERSIAN_MONTHS.get(m, f"ماه {m}")
+            row["ماه شمسی"] = f"{mname} {y}"
+        else:
+            # Fallback to month_key if no date found
+            mk = str(row.get("ماه", row.get("month_key", "")))
+            parts = mk.split("-")
+            if len(parts) == 2:
+                try:
+                    y, m = parts[0], int(parts[1])
+                    mname = PERSIAN_MONTHS.get(m, f"ماه {m}")
+                    row["ماه شمسی"] = f"{mname} {y}"
+                except:
+                    row["ماه شمسی"] = mk
+            else:
+                row["ماه شمسی"] = mk
+
+    return {
+        "columns": [
+            "ماه", "ماه شمسی", "محصول", "فصل",
+            "تاریخ توصیه", "شماره سرک", "تاریخ اجرا", "فاصله (روز)",
+            "شماره توصیه", "شماره چاه", "مساحت (هکتار)", "نوع گیاه",
+            "واریته ۱", "واریته ۲", "واریته ۳",
+            "واریته (ترکیبی)",
+            "نام کود", "قیمت فی خرید", "توصیه/هکتار",
+            "توصیه/مساحت", "مصرفی/وزنی", "مصرفی/ریالی",
+            "موجودی انبار", "واحد", "جنس کود", "مازاد/کمبود", "تحقق%",
+        ],
+        "rows": all_rows,
+        "total": len(all_rows),
+    }
 
 
 @router.get("/api/reports/{report_type}")

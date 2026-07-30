@@ -90,3 +90,22 @@ def download_payroll_highlight(
         filename=path.name,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
+
+
+@router.delete("/api/upload/{month_key}")
+def delete_payroll_upload(
+    month_key: str,
+    db: DbSession = Depends(get_db),
+    user: User = Depends(current_user_dep),
+):
+    from app.models.upload import Upload, UploadType
+    from sqlalchemy import select
+
+    upload = db.execute(
+        select(Upload).where(Upload.upload_type == UploadType.PAYROLL, Upload.month_key == month_key)
+    ).scalar_one_or_none()
+    if not upload:
+        raise HTTPException(status_code=404, detail="فایل یافت نشد")
+
+    upload_service.delete_upload(db, upload, user)
+    return {"ok": True, "message": "فایل با موفقیت حذف شد"}

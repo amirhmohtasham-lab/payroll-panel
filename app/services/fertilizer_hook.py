@@ -55,6 +55,15 @@ def post_process_fertilizer_upload(
 
     row_count = result["row_count"]
 
+    # Also add Cleaned Data to the highlighted file (for download)
+    if upload.highlight_path and os.path.isfile(upload.highlight_path):
+        try:
+            hl = run_unpivot(upload.highlight_path)
+            if hl["success"]:
+                logger.info("unpivot: added Cleaned Data to highlight %s", upload.highlight_path)
+        except Exception as exc:
+            logger.warning("unpivot on highlight failed: %s", exc)
+
     # ── 2. Re-upload modified file to Drive (replace original) ──────────
     try:
         folder = drive_service.ensure_folder()

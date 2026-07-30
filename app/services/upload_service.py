@@ -44,6 +44,55 @@ def validate_month_key(month_key: str) -> str:
     return month_key
 
 
+
+def validate_upload_type(file: UploadFile, expected: str) -> None:
+    """Verify the uploaded file has the expected structure for its upload type.
+    
+    For fertilizer (expected='fertilizer'): must have 'اطلاعات ورودی' AND 'Data Validation' sheets.
+    For payroll (expected='payroll'): must NOT have 'اطلاعات ورودی' (which is fertilizer-specific).
+    """
+    if not file.filename:
+        return
+    # Save to temp to inspect
+    import tempfile
+    from openpyxl import load_workbook
+    content = file.file.read()
+    file.file.seek(0)  # reset for later use
+    
+    with tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False) as tmp:
+        tmp.write(content)
+        tmp_path = tmp.name
+    
+    try:
+        wb = load_workbook(tmp_path, read_only=True)
+        sheets = set(wb.sheetnames)
+        wb.close()
+        
+        has_input = 'اطلاعات ورودی' in sheets  # اطلاعات ورودی
+        has_dv = 'Data Validation' in sheets
+        
+        if expected == 'fertilizer':
+            if not has_input:
+                raise HTTPException(
+                    status_code=400,
+                    detail='فایل معتبر مصرف کود نیست. شیت «اطلاعات ورودی» پیدا نشد.'
+                )
+            if not has_dv:
+                raise HTTPException(
+                    status_code=400,
+                    detail='فایل معتبر مصرف کود نیست. شیت «Data Validation» پیدا نشد.'
+                )
+        elif expected == 'payroll':
+            if has_input:
+                raise HTTPException(
+                    status_code=400,
+                    detail='این فایل مربوط به مصرف کود است. لطفا از بخش مصرف کود استفاده کنید.'
+                )
+    finally:
+        import os
+        os.unlink(tmp_path)
+
+
 def validate_xlsx(file: UploadFile) -> None:
     if not file.filename or not file.filename.lower().endswith(".xlsx"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="فقط فایل .xlsx مجاز است")
@@ -96,6 +145,7 @@ async def process_payroll_upload(
     user: User,
 ) -> Upload:
     validate_xlsx(file)
+    validate_upload_type(file, "payroll")
     month_key = validate_month_key(month_key)
 
     existing = _existing_for_month(db, UploadType.PAYROLL, month_key)
@@ -178,6 +228,7 @@ async def process_fertilizer_upload(
     user: User,
 ) -> Upload:
     validate_xlsx(file)
+    validate_upload_type(file, "fertilizer")
     month_key = validate_month_key(month_key)
 
     existing = _existing_for_month(db, UploadType.FERTILIZER, month_key)
@@ -273,6 +324,28 @@ def issues_grouped(issues: list[AuditIssue]) -> list[dict[str, Any]]:
             {"severity": i.severity, "code": i.code, "sheet": i.sheet, "message": i.message}
         )
     return list(grouped.values())
+
+
+
+def delete_upload(db: DbSession, upload: Upload, user: User) -> None:
+    """Delete an upload record + local files. Only accountants can delete."""
+    from app.core.security import require_roles
+    from app.models.user import UserRole
+
+    if user.role != UserRole.ACCOUNTANT:
+        raise HTTPException(status_code=403, detail="فقط حسابدار می‌تواند حذف کند")
+
+    # Delete local files
+    storage_service.delete_if_exists(upload.stored_path)
+    storage_service.delete_if_exists(upload.highlight_path)
+
+    # Delete audit issues
+    for issue in list(upload.issues):
+        db.delete(issue)
+
+    # Delete the upload record
+    db.delete(upload)
+    db.commit()
 
 
 def to_public_dict(upload: Upload) -> dict[str, Any]:

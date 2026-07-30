@@ -73,6 +73,26 @@ export function ArchivePage() {
                     >
                       جزئیات
                     </button>
+                    
+                    <button
+                      className="danger"
+                      onClick={async () => {
+                        if (!confirm('آیا از حذف فایل «' + r.label + '» اطمینان دارید؟')) return;
+                        try {
+                          const url = r.type === 'fertilizer'
+                            ? '/api/fertilizer/upload/' + encodeURIComponent(r.month_key)
+                            : '/api/upload/' + encodeURIComponent(r.month_key);
+                          await api.delete(url);
+                          // Refresh list
+                          const d: any = await api.get('/api/archive');
+                          setData(d);
+                        } catch (e: any) {
+                          alert('خطا در حذف: ' + (e.message || 'unknown'));
+                        }
+                      }}
+                    >
+                      🗑 حذف
+                    </button>
                   </td>
                 </tr>
               ))}

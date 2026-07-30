@@ -142,7 +142,8 @@ function PayrollUploadForm({ onUploaded }: { onUploaded: () => void }) {
 
   return (
     <div>
-      <label>ماه (شمسی)</label>
+      
+      <label style={{ marginTop: '.6rem' }}>ماه (شمسی)</label>
       <select value={monthKey} onChange={(e) => setMonthKey(e.target.value)}>
         {MONTHS.map((m) => (
           <option key={m.value} value={m.value}>
@@ -180,7 +181,6 @@ function PayrollUploadForm({ onUploaded }: { onUploaded: () => void }) {
 }
 
 function FertilizerUploadForm({ onUploaded }: { onUploaded: () => void }) {
-  const [monthKey, setMonthKey] = useState(MONTHS[0]?.value ?? '');
   const [crop, setCrop] = useState(CROPS[0]);
   const [season, setSeason] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -189,7 +189,7 @@ function FertilizerUploadForm({ onUploaded }: { onUploaded: () => void }) {
   const [record, setRecord] = useState<UploadRecord | null>(null);
   const [duplicate, setDuplicate] = useState<DuplicateInfo | null>(null);
 
-  const monthLabel = MONTHS.find((m) => m.value === monthKey)?.label ?? monthKey;
+  const autoMonthKey = String(new Date().getFullYear() - 621) + "-" + String(Date.now() % 100).padStart(2, "0");
 
   async function submit(replace: boolean) {
     if (!file) {
@@ -201,8 +201,8 @@ function FertilizerUploadForm({ onUploaded }: { onUploaded: () => void }) {
     try {
       const form = new FormData();
       form.append('file', file);
-      form.append('month_key', monthKey);
-      form.append('month_label', monthLabel);
+      form.append('month_key', autoMonthKey);
+      form.append('month_label', '');
       form.append('crop', crop);
       form.append('season', season.trim());
       form.append('replace', replace ? 'true' : 'false');
@@ -240,14 +240,7 @@ function FertilizerUploadForm({ onUploaded }: { onUploaded: () => void }) {
       </select>
       <label style={{ marginTop: '.6rem' }}>فصل</label>
       <input value={season} onChange={(e) => setSeason(e.target.value)} placeholder="مثلاً بهار ۱۴۰۵" />
-      <label style={{ marginTop: '.6rem' }}>ماه (شمسی)</label>
-      <select value={monthKey} onChange={(e) => setMonthKey(e.target.value)}>
-        {MONTHS.map((m) => (
-          <option key={m.value} value={m.value}>
-            {m.label}
-          </option>
-        ))}
-      </select>
+      
       <label style={{ marginTop: '.6rem' }}>فایل اکسل</label>
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <p style={{ marginTop: '.75rem' }}>

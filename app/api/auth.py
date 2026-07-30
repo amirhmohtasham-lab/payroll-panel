@@ -34,7 +34,7 @@ def login(body: LoginRequest, response: Response, db: DbSession = Depends(get_db
         value=token,
         httponly=True,
         samesite="strict",
-        secure=settings.is_production,
+        secure=False,
         max_age=settings.session_ttl_hours * 3600,
     )
     redirect = "/operator" if user.role == UserRole.OPERATOR else "/index"
