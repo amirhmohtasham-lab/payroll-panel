@@ -24,17 +24,19 @@ router = APIRouter(tags=["auth"])
 
 
 @router.post("/api/login", response_model=LoginResponse)
-def login(body: LoginRequest, response: Response, db: DbSession = Depends(get_db)):
+def login(body: LoginRequest, request: Request, response: Response, db: DbSession = Depends(get_db)):
     settings = get_settings()
     user = auth_service.authenticate(db, body.username, body.password)
     token, expires_at = create_session(db, user)
 
+    forwarded_proto = request.headers.get("x-forwarded-proto", "http")
+    is_secure = request.url.scheme == "https" or forwarded_proto == "https"
     response.set_cookie(
         key=settings.session_cookie_name,
         value=token,
         httponly=True,
-        samesite="strict",
-        secure=False,
+        samesite="none" if is_secure else "strict",
+        secure=is_secure,
         max_age=settings.session_ttl_hours * 3600,
     )
     redirect = "/operator" if user.role == UserRole.OPERATOR else "/index"

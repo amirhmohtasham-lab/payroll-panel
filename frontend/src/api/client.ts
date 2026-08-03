@@ -15,9 +15,12 @@ export class ApiError extends Error {
   }
 }
 
+// API base: same-origin by default; overridable at build time for Vercel hosting.
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(path, {
-    credentials: 'same-origin',
+  const res = await fetch(API_BASE + path, {
+    credentials: 'include',
     headers:
       options.body && !(options.body instanceof FormData)
         ? { 'Content-Type': 'application/json', ...options.headers }
