@@ -1,3 +1,5 @@
+// Auth context — current user session, login/logout state.
+
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api, ApiError } from '../api/client';
 import type { LoginResponse, MeResponse } from '../api/types';

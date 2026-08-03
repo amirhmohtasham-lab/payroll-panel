@@ -1,3 +1,5 @@
+// Duplicate-upload modal — lets the user overwrite or cancel.
+
 import type { DuplicateInfo } from '../api/types';
 
 export function DuplicateModal({
@@ -12,7 +14,7 @@ export function DuplicateModal({
   return (
     <div className="modal-backdrop">
       <div className="modal-box">
-        <h3 style={{ marginBottom: '.5rem' }}>⚠️ فایل تکراری</h3>
+        <h3 style={{ marginBottom: '.5rem' }}> فایل تکراری</h3>
         <p style={{ color: 'var(--text-sec)', fontSize: '.9rem' }}>
           برای «{info.existing.month_label || info.existing.month_key}» قبلاً فایل ثبت شده. جایگزین
           شود؟

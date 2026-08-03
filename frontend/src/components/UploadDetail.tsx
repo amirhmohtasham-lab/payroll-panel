@@ -1,8 +1,10 @@
+// Upload result panel — shows audit issues after a file upload.
+
 import type { UploadRecord } from '../api/types';
 import { formatNumber } from '../lib/months';
 
 export function UploadDetail({ record, kind }: { record: UploadRecord; kind: 'payroll' | 'fertilizer' }) {
-  const icon = kind === 'payroll' ? '👷' : '🧪';
+  const icon = kind === 'payroll' ? '' : '';
   const sheets = record.audit_summary?.sheets ?? [];
   const issues = record.issues_grouped.flatMap((g) => g.items);
 
@@ -20,12 +22,12 @@ export function UploadDetail({ record, kind }: { record: UploadRecord; kind: 'pa
       </p>
       {record.highlight_url && (
         <p style={{ marginTop: '.5rem' }}>
-          <a href={record.highlight_url}>📥 دانلود اکسل هایلایت‌شده</a>
+          <a href={record.highlight_url}> دانلود اکسل هایلایت‌شده</a>
         </p>
       )}
       {record.drive_error && (
         <p className="msg warn" style={{ marginTop: '.5rem' }}>
-          ⚠️ پشتیبان‌گیری Drive: {record.drive_error}
+           پشتیبان‌گیری Drive: {record.drive_error}
         </p>
       )}
       {sheets.length > 0 && (
@@ -76,7 +78,7 @@ export function UploadDetail({ record, kind }: { record: UploadRecord; kind: 'pa
           ))}
         </>
       ) : (
-        <p style={{ color: 'var(--green)', marginTop: '.5rem' }}>✅ بدون نقص</p>
+        <p style={{ color: 'var(--green)', marginTop: '.5rem' }}> بدون نقص</p>
       )}
     </div>
   );

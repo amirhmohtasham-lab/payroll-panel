@@ -1,8 +1,11 @@
+// Chat — order a custom report from the assistant, view history.
+
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { api } from '../api/client';
 import type { ChatMessageOut, ChatResponse } from '../api/types';
 import { ACCOUNTANT_NAV } from '../lib/nav';
+import { ChatRobot, Export } from '../ui/icons';
 
 interface DisplayMessage {
   role: 'user' | 'assistant';
@@ -43,7 +46,7 @@ export function ChatPage() {
       const res = await api.post<ChatResponse>('/api/chat', { message: msg });
       setMessages((prev) => [...prev, { role: 'assistant', text: res.reply, chart: res.chart }]);
     } catch {
-      setMessages((prev) => [...prev, { role: 'assistant', text: '⚠️ خطا در پردازش درخواست.' }]);
+      setMessages((prev) => [...prev, { role: 'assistant', text: 'خطا در پردازش درخواست.' }]);
     }
   }
 
@@ -54,14 +57,14 @@ export function ChatPage() {
   return (
     <Layout title="چت سفارش گزارش" navItems={ACCOUNTANT_NAV}>
       <div className="card">
-        <h2>🤖 چت سفارش گزارش</h2>
+        <h2><ChatRobot size={18} /> چت سفارش گزارش</h2>
         <div className="chat-box" ref={boxRef}>
           {loaded && messages.length === 0 && (
             <p style={{ color: 'var(--text-muted)' }}>تاریخچه خالی است.</p>
           )}
           {messages.map((m, i) => (
             <div key={i} className={`chat-msg ${m.role === 'user' ? 'user' : 'bot'}`}>
-              <strong>{m.role === 'user' ? 'شما:' : '🤖 ربات گزارش:'}</strong>
+              <strong>{m.role === 'user' ? 'شما:' : <><ChatRobot size={18} /> ربات گزارش:</>}</strong>
               <br />
               {m.text.split('\n').map((line, li) => (
                 <span key={li}>
@@ -80,8 +83,8 @@ export function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <button className="primary" onClick={send}>
-            ارسال
+          <button className="primary" onClick={send} style={{ display: 'inline-flex', alignItems: 'center', gap: '.35rem' }}>
+            <Export size={16} /> ارسال
           </button>
         </div>
       </div>

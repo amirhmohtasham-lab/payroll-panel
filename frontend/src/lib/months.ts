@@ -1,3 +1,5 @@
+// Persian month helpers — month list, labels, number formatting.
+
 export const PERSIAN_MONTHS: [string, string][] = [
   ['01', 'فروردین'],
   ['02', 'اردیبهشت'],

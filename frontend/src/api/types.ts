@@ -1,3 +1,5 @@
+// Shared TypeScript types for API responses and upload records.
+
 export type UserRole = 'operator' | 'accountant';
 
 export interface MeResponse {

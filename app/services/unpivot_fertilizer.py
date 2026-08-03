@@ -1,3 +1,5 @@
+"""Fertilizer Excel unpivot: wide sheet -> long (dept, crop, amount) rows."""
+
 import sys, os, re
 from collections import defaultdict
 from openpyxl import load_workbook

@@ -1,3 +1,5 @@
+"""Auth schemas: login payload and session responses."""
+
 from __future__ import annotations
 
 import uuid

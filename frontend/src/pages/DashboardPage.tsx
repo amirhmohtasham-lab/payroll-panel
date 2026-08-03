@@ -1,3 +1,5 @@
+// Dashboard / Upload Hub — payroll + fertilizer upload forms, stat cards.
+
 import { useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { UploadDetail } from '../components/UploadDetail';
@@ -11,6 +13,7 @@ import type {
 } from '../api/types';
 import { CROPS, formatNumber, monthOptions } from '../lib/months';
 import { ACCOUNTANT_NAV } from '../lib/nav';
+import { Upload, Search, DashWorker, DashFertilizer } from '../ui/icons';
 
 const MONTHS = monthOptions();
 
@@ -32,7 +35,7 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <Layout title="Upload Hub" navItems={ACCOUNTANT_NAV}>
+    <Layout title="بارگذاری اطلاعات جدید" navItems={ACCOUNTANT_NAV}>
       <section className="page-intro">
         <div>
           <span className="eyebrow">نبض مالی مزرعه</span>
@@ -53,19 +56,19 @@ export function DashboardPage() {
       </div>
 
       <div className="card">
-        <h2>📤 Upload Hub</h2>
+        <h2><Upload size={18} /> بارگذاری اطلاعات جدید</h2>
         <div className="type-selector">
           <button
             className={`type-pill${uploadType === 'payroll' ? ' active' : ''}`}
             onClick={() => setUploadType('payroll')}
           >
-            <span className="icon">👷</span> صورت کارگری
+            <span className="icon"><DashWorker size={18} /></span> صورت کارگری
           </button>
           <button
             className={`type-pill${uploadType === 'fertilizer' ? ' active' : ''}`}
             onClick={() => setUploadType('fertilizer')}
           >
-            <span className="icon">🧪</span> مصرف کود
+            <span className="icon"><DashFertilizer size={18} /></span> مصرف کود
           </button>
         </div>
         {uploadType === 'payroll' ? (
@@ -129,7 +132,7 @@ function PayrollUploadForm({ onUploaded }: { onUploaded: () => void }) {
       setDuplicate(null);
       setMessage({
         ok: res.error_count === 0,
-        text: `✅ ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
+        text: `ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
       });
       setRecord(res.record);
       onUploaded();
@@ -161,7 +164,7 @@ function PayrollUploadForm({ onUploaded }: { onUploaded: () => void }) {
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <p style={{ marginTop: '.75rem' }}>
         <button className="primary" disabled={submitting} onClick={() => submit(false)}>
-          🔍 بررسی و بارگذاری
+          <Search size={16} /> بررسی و بارگذاری
         </button>
       </p>
       {message && <div className={`msg ${message.ok ? 'ok' : 'err'}`}>{message.text}</div>}
@@ -217,7 +220,7 @@ function FertilizerUploadForm({ onUploaded }: { onUploaded: () => void }) {
       setDuplicate(null);
       setMessage({
         ok: res.error_count === 0,
-        text: `✅ ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
+        text: `ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
       });
       setRecord(res.record);
       onUploaded();
@@ -245,7 +248,7 @@ function FertilizerUploadForm({ onUploaded }: { onUploaded: () => void }) {
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <p style={{ marginTop: '.75rem' }}>
         <button className="primary" disabled={submitting} onClick={() => submit(false)}>
-          🔍 بررسی و بارگذاری
+          <Search size={16} /> بررسی و بارگذاری
         </button>
       </p>
       {message && <div className={`msg ${message.ok ? 'ok' : 'err'}`}>{message.text}</div>}

@@ -1,3 +1,5 @@
+// Login — credential form and brand story panel.
+
 import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';

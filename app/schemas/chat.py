@@ -1,3 +1,5 @@
+"""Chat schemas: message and conversation responses."""
+
 from __future__ import annotations
 
 import uuid

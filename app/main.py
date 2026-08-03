@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, chat, fertilizer, reports, uploads
+from app.api import auth, chat, fertilizer, greenhouse, reports, uploads
 from app.config import get_settings
 
 settings = get_settings()
@@ -25,6 +25,7 @@ app.include_router(uploads.router)
 app.include_router(fertilizer.router)
 app.include_router(reports.router)
 app.include_router(chat.router)
+app.include_router(greenhouse.router)
 
 
 @app.get("/api/healthz")

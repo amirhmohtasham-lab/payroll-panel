@@ -1,9 +1,12 @@
+// Archive — unified list of uploaded files with delete + details.
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { api } from '../api/client';
 import type { ArchiveResponse } from '../api/types';
 import { ACCOUNTANT_NAV } from '../lib/nav';
+import { Trash, Clipboard, ArchFolder, ArchFertilizer } from '../ui/icons';
 
 export function ArchivePage() {
   const [data, setData] = useState<ArchiveResponse | null>(null);
@@ -18,9 +21,9 @@ export function ArchivePage() {
   }, []);
 
   return (
-    <Layout title="آرشیو یکپارچه" navItems={ACCOUNTANT_NAV}>
+    <Layout title="آرشیو اطلاعات" navItems={ACCOUNTANT_NAV}>
       <div className="card">
-        <h2>📁 آرشیو یکپارچه</h2>
+        <h2><ArchFolder size={18} /> آرشیو اطلاعات</h2>
         {error && <div className="msg err">{error}</div>}
         {!data && !error && <div className="loading">در حال بارگذاری…</div>}
         {data && data.items.length === 0 && (
@@ -42,7 +45,7 @@ export function ArchivePage() {
               {data.items.map((r) => (
                 <tr key={`${r.type}-${r.month_key}`}>
                   <td>
-                    {r.type === 'fertilizer' ? '🧪' : '📋'} {r.module_label}
+                    {r.type === 'fertilizer' ? <ArchFertilizer size={18} /> : <Clipboard size={18} />} {r.module_label}
                   </td>
                   <td>{r.label}</td>
                   <td>
@@ -91,7 +94,7 @@ export function ArchivePage() {
                         }
                       }}
                     >
-                      🗑 حذف
+                      <Trash size={16} /> حذف
                     </button>
                   </td>
                 </tr>

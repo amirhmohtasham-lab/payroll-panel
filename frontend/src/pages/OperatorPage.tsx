@@ -1,3 +1,5 @@
+// Operator panel — simplified upload entry for the operator role.
+
 import { useState } from 'react';
 import { Layout } from '../components/Layout';
 import { UploadDetail } from '../components/UploadDetail';
@@ -5,8 +7,9 @@ import { DuplicateModal } from '../components/DuplicateModal';
 import { api, ApiError } from '../api/client';
 import type { DuplicateInfo, UploadRecord, UploadResultResponse } from '../api/types';
 import { CROPS, monthOptions } from '../lib/months';
+import { Upload, User, Beaker, Search } from '../ui/icons';
 
-const NAV = [{ to: '/operator', icon: '📤', label: 'بارگذاری' }];
+const NAV = [{ to: '/operator', icon: 'upload', label: 'بارگذاری' }];
 const MONTHS = monthOptions();
 
 export function OperatorPage() {
@@ -15,7 +18,7 @@ export function OperatorPage() {
   return (
     <Layout title="پنل اپراتور" navItems={NAV}>
       <div className="card">
-        <h2>📤 Upload Hub — مرکز بارگذاری</h2>
+        <h2><Upload size={18} /> Upload Hub — مرکز بارگذاری</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '.85rem', marginBottom: '.75rem' }}>
           نوع فایل مورد نظر را انتخاب کنید.
         </p>
@@ -24,13 +27,13 @@ export function OperatorPage() {
             className={`type-pill${activeType === 'payroll' ? ' active' : ''}`}
             onClick={() => setActiveType('payroll')}
           >
-            <span className="icon">👷</span> صورت کارگری
+            <span className="icon"><User size={18} /></span> صورت کارگری
           </button>
           <button
             className={`type-pill${activeType === 'fertilizer' ? ' active' : ''}`}
             onClick={() => setActiveType('fertilizer')}
           >
-            <span className="icon">🧪</span> مصرف کود
+            <span className="icon"><Beaker size={18} /></span> مصرف کود
           </button>
         </div>
         {activeType === 'payroll' ? <PayrollUploadForm /> : <FertilizerUploadForm />}
@@ -70,7 +73,7 @@ function PayrollUploadForm() {
       setDuplicate(null);
       setMessage({
         ok: res.error_count === 0,
-        text: `✅ ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
+        text: `ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
       });
       setRecord(res.record);
     } catch (e) {
@@ -94,7 +97,7 @@ function PayrollUploadForm() {
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <p style={{ marginTop: '.75rem' }}>
         <button className="primary" disabled={submitting} onClick={() => submit(false)}>
-          🔍 بررسی و بارگذاری
+          <Search size={16} /> بررسی و بارگذاری
         </button>
       </p>
       {message && <div className={`msg ${message.ok ? 'ok' : 'err'}`}>{message.text}</div>}
@@ -155,7 +158,7 @@ function FertilizerUploadForm() {
       setDuplicate(null);
       setMessage({
         ok: res.error_count === 0,
-        text: `✅ ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
+        text: `ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
       });
       setRecord(res.record);
     } catch (e) {
@@ -193,7 +196,7 @@ function FertilizerUploadForm() {
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <p style={{ marginTop: '.75rem' }}>
         <button className="primary" disabled={submitting} onClick={() => submit(false)}>
-          🔍 بررسی و بارگذاری
+          <Search size={16} /> بررسی و بارگذاری
         </button>
       </p>
       {message && <div className={`msg ${message.ok ? 'ok' : 'err'}`}>{message.text}</div>}

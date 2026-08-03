@@ -1,3 +1,5 @@
+"""Upload schemas: upload result and duplicate-info responses."""
+
 from __future__ import annotations
 
 import uuid

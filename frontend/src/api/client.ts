@@ -1,3 +1,5 @@
+// API client — fetch wrapper with auth cookie + JSON helpers.
+
 export class ApiError extends Error {
   status: number;
   data: unknown;

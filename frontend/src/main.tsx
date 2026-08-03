@@ -1,3 +1,5 @@
+// Entry point — mounts the React app with BrowserRouter.
+
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';

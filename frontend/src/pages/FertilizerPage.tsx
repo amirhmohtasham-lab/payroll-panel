@@ -1,3 +1,5 @@
+// Fertilizer management — upload + inspect fertilizer consumption files.
+
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/Layout';
@@ -7,6 +9,7 @@ import { api, ApiError } from '../api/client';
 import type { DuplicateInfo, MonthListResponse, UploadRecord } from '../api/types';
 import { monthOptions } from '../lib/months';
 import { ACCOUNTANT_NAV } from '../lib/nav';
+import { Beaker, Search } from '../ui/icons';
 
 const MONTHS = monthOptions();
 
@@ -39,9 +42,9 @@ export function FertilizerPage() {
   }, [searchParams]);
 
   return (
-    <Layout title="🧪 مدیریت کود" navItems={ACCOUNTANT_NAV}>
+    <Layout title="<Beaker size={18} /> مدیریت کود" navItems={ACCOUNTANT_NAV}>
       <div className="card">
-        <h2>🧪 بارگذاری مصرف کود</h2>
+        <h2><Beaker size={18} /> بارگذاری مصرف کود</h2>
         <UploadForm
           onUploaded={(rec) => {
             setRecord(rec);
@@ -131,7 +134,7 @@ function UploadForm({ onUploaded }: { onUploaded: (rec: UploadRecord) => void })
       setDuplicate(null);
       setMessage({
         ok: res.error_count === 0,
-        text: `✅ ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
+        text: `ثبت شد. خطا: ${res.error_count} | هشدار: ${res.warn_count}`,
       });
       onUploaded(res.record);
     } catch (e) {
@@ -161,7 +164,7 @@ function UploadForm({ onUploaded }: { onUploaded: (rec: UploadRecord) => void })
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <p style={{ marginTop: '.75rem' }}>
         <button className="primary" disabled={submitting} onClick={() => submit(false)}>
-          🔍 بررسی و بارگذاری
+          <Search size={16} /> بررسی و بارگذاری
         </button>
       </p>
       {message && <div className={`msg ${message.ok ? 'ok' : 'err'}`}>{message.text}</div>}

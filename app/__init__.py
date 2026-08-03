@@ -1,0 +1,1 @@
+"""Payroll panel backend package."""

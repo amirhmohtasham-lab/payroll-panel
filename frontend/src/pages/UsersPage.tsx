@@ -1,8 +1,11 @@
+// User management — list users and add new accounts (accountant only).
+
 import { type FormEvent, useEffect, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { api, ApiError } from '../api/client';
 import type { UserOut, UserRole } from '../api/types';
 import { ACCOUNTANT_NAV } from '../lib/nav';
+import { Plus, User } from '../ui/icons';
 
 export function UsersPage() {
   const [users, setUsers] = useState<UserOut[] | null>(null);
@@ -34,12 +37,12 @@ export function UsersPage() {
   return (
     <Layout title="مدیریت کاربران" navItems={ACCOUNTANT_NAV}>
       <div className="card">
-        <h2>➕ افزودن کاربر</h2>
+        <h2><Plus size={18} /> افزودن کاربر</h2>
         <CreateUserForm onCreated={load} />
       </div>
 
       <div className="card">
-        <h2>👤 کاربران</h2>
+        <h2><User size={18} /> کاربران</h2>
         {error && <div className="msg err">{error}</div>}
         {!users && !error && <div className="loading">در حال بارگذاری…</div>}
         {users && (
@@ -87,7 +90,7 @@ function CreateUserForm({ onCreated }: { onCreated: () => void }) {
     setMessage(null);
     try {
       await api.post('/api/users', { username, password, name, role });
-      setMessage({ ok: true, text: '✅ کاربر ایجاد شد.' });
+      setMessage({ ok: true, text: '<Check /> کاربر ایجاد شد.' });
       setUsername('');
       setPassword('');
       setName('');

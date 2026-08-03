@@ -1,3 +1,5 @@
+// Chart.js global registration (bar, doughnut, line elements).
+
 import {
   BarElement,
   CategoryScale,
